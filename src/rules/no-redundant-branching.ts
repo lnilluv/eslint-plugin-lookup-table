@@ -86,6 +86,14 @@ const rule: RuleModule<"redundantBranching" | "manualRefactor", Options> = {
       return sourceCode.getText(node);
     };
 
+    /**
+     * Collect early-return chains from a function body.
+     *
+     * Unlike ternary/if-else/switch patterns where 2+ independent chains must exist
+     * to trigger a report, an early-return function IS the redundancy itself — each
+     * branch returns an object with the same keys, which should be a lookup table.
+     * We create one descriptor per branch so they self-group and meet the threshold.
+     */
     function maybeCollectEarlyReturnChain(
       functionBody: types.TSESTree.BlockStatement,
       scopeNode: types.TSESTree.Node
@@ -97,18 +105,7 @@ const rule: RuleModule<"redundantBranching" | "manualRefactor", Options> = {
         result.descriptor.scopeId = getScopeKey(scopeNode);
 
         for (const branch of result.descriptor.branches) {
-          const parent = branch.consequent.parent;
-          let reportNode: types.TSESTree.Node = result.descriptor.node;
-
-          if (parent?.type === AST_NODE_TYPES.IfStatement) {
-            reportNode = parent;
-          } else if (
-            parent?.type === AST_NODE_TYPES.BlockStatement &&
-            parent.parent?.type === AST_NODE_TYPES.IfStatement
-          ) {
-            reportNode = parent.parent;
-          }
-
+          const reportNode = branch.sourceNode ?? result.descriptor.node;
           const branchDescriptor: ChainDescriptor = {
             ...result.descriptor,
             node: reportNode,
@@ -270,6 +267,8 @@ const rule: RuleModule<"redundantBranching" | "manualRefactor", Options> = {
       },
 
       FunctionExpression(node) {
+        // Skip FunctionExpression nodes that are children of MethodDefinition —
+        // those are handled by the MethodDefinition visitor to avoid double-processing.
         if (node.parent?.type === AST_NODE_TYPES.MethodDefinition) {
           return;
         }

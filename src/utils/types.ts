@@ -4,6 +4,8 @@ export interface Branch {
   testCode: string;
   testValue: string;
   consequent: types.TSESTree.Node;
+  /** Original AST node for error reporting (e.g., the IfStatement). Optional. */
+  sourceNode?: types.TSESTree.Node;
 }
 
 export interface ChainDescriptor {

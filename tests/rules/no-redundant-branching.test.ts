@@ -499,6 +499,20 @@ function getUserConfig(role: string) {
           { messageId: "redundantBranching" },
         ],
       },
+      // Early-return with block-wrapped returns
+      {
+        code: `
+function getTheme(mode: string) {
+  if (mode === 'dark') { return { bg: '#000', fg: '#fff' }; }
+  if (mode === 'light') { return { bg: '#fff', fg: '#000' }; }
+  return { bg: '#888', fg: '#333' };
+}
+        `,
+        errors: [
+          { messageId: "redundantBranching" },
+          { messageId: "redundantBranching" },
+        ],
+      },
       // Early-return arrow function object blocks on same discriminant
       {
         code: `

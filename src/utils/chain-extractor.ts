@@ -344,6 +344,7 @@ export function extractEarlyReturnChain(
         testCode: getSourceText(ifStatement.test, sourceCode),
         testValue: discInfo.value,
         consequent: returnInfo.returnStatement,
+        sourceNode: ifStatement,
       });
 
       index++;
