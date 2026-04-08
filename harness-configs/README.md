@@ -4,13 +4,13 @@ These are ready-to-copy configurations that run eslint-plugin-lookup-table autom
 
 ## Prerequisites
 
-- Install `eslint-plugin-redundant-branching` as a dev dependency.
-- Ensure `eslint.config.js` includes the plugin with this setup from the main README:
+- Install `eslint-plugin-lookup-table` as a dev dependency.
+- Configure `eslint.config.js` with the plugin:
 ```javascript
 // eslint.config.js
-import redundantBranching from "eslint-plugin-redundant-branching";
+import lookupTable from "eslint-plugin-lookup-table";
 
-export default [redundantBranching.configs.recommended];
+export default [lookupTable.configs.recommended];
 ```
 
 ## pi.dev

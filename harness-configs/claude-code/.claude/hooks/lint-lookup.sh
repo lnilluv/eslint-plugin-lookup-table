@@ -3,10 +3,8 @@
 # Runs ESLint with the redundant-branching rule on written/edited TS files.
 # Always exits 0 — PostToolUse hooks must never block Claude Code.
 
-set -euo pipefail
-
 INPUT=$(cat)
-FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)
 
 # Skip if no file path or not a TypeScript file
 if [[ -z "$FILE" || ( "$FILE" != *.ts && "$FILE" != *.tsx ) ]]; then
