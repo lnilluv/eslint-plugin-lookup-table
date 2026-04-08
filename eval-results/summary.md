@@ -4,9 +4,9 @@
 
 | Repo | Files Scanned | Files w/ Reports | Total Reports |
 |------|---------------|-----------------|---------------|
-| typescript-eslint | 0 | 0 | 0 |
-| tRPC | 0 | 0 | 0 |
-| query | 0 | 0 | 0 |
+| typescript-eslint | 100 | 0 | 0 |
+| tRPC | 100 | 0 | 0 |
+| query | 100 | 0 | 0 |
 
 ## Methodology
 
@@ -27,4 +27,3 @@ The evaluated repos are mature TypeScript projects that:
 - Already use lookup tables directly where appropriate
 - Avoid the redundant branching pattern this rule detects
 - Have well-structured conditional logic
-

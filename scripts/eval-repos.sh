@@ -119,9 +119,16 @@ eval_repo() {
 
   report_data="${report_data}]"
 
-  # Save report data
+  # Save report data with stats as top-level fields
   local report_file="$EVAL_DIR/${name}-reports.json"
-  echo "$report_data" > "$report_file"
+  cat > "$report_file" << EOF
+{
+  "files_scanned": $total_files,
+  "files_with_reports": $files_with_reports,
+  "total_reports": $total_reports,
+  "reports": $report_data
+}
+EOF
 
   echo "  Files scanned: $total_files"
   echo "  Files with reports: $files_with_reports"
@@ -202,9 +209,9 @@ for repo_info in "${REPOS[@]}"; do
   report_file="$EVAL_DIR/${name}-reports.json"
 
   if [ -f "$report_file" ]; then
-    files_with_reports=$(jq '[.[] | select(.reports > 0)] | length' "$report_file" 2>/dev/null || echo "0")
-    total_reports=$(jq '[.[] | .reports] | add // 0' "$report_file" 2>/dev/null || echo "0")
-    files_scanned=$(jq 'length' "$report_file" 2>/dev/null || echo "?")
+    files_with_reports=$(jq '.files_with_reports' "$report_file" 2>/dev/null || echo "0")
+    total_reports=$(jq '.total_reports' "$report_file" 2>/dev/null || echo "0")
+    files_scanned=$(jq '.files_scanned' "$report_file" 2>/dev/null || echo "?")
     echo "| $name | $files_scanned | $files_with_reports | $total_reports |" >> "$SUMMARY_FILE"
   else
     echo "| $name | ? | 0 | 0 |" >> "$SUMMARY_FILE"
