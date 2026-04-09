@@ -127,12 +127,10 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Sync version to pi-lookup-lint
+      - name: Bump pi-lookup-lint version
         if: steps.bump.outputs.should_release == 'true'
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          cd harness-configs/pi
-          npm version "$VERSION" --no-git-tag-version
+        run: npm version ${{ steps.bump.outputs.bump }} --no-git-tag-version
+        working-directory: harness-configs/pi
 
       - name: Publish eslint-plugin-lookup-table (main)
         if: steps.bump.outputs.should_release == 'true' && github.ref_name == 'main'
