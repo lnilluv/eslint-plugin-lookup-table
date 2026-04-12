@@ -9,7 +9,7 @@ Finds repeated conditional logic on the same variable and replaces it with a loo
 
 Code that branches on the same discriminant multiple times scatters related data across parallel structures. Adding a new case means editing every branch. Miss one and you ship a bug.
 
-This pattern spreads fast in AI-assisted workflows. When existing code contains a ternary chain, AI models copy the style instead of refactoring — [100% of the time in our tests](experiment/results/MIMICRY_REPORT.md).
+This pattern spreads fast in AI-assisted workflows. When existing code contains a ternary chain, AI models copy the style instead of refactoring.
 
 ## Before
 
