@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -7,33 +6,14 @@ import registerPiExtension from "../src/pi-extension.js";
 
 type NotificationLevel = "info" | "success" | "warning" | "error";
 
-type SessionStartHandler = () => Promise<void> | void;
-
-type ToolResultEvent = {
-  toolName: string;
-  input?: {
-    path?: string;
-    content?: string;
-  };
-  content: Array<{ type: string; text?: string }>;
-};
-
-type ToolResultHandler = (...args: [ToolResultEvent]) => Promise<unknown> | unknown;
-
-type PiHandlers = {
-  session_start: SessionStartHandler;
-  tool_result: ToolResultHandler;
-};
-
-interface RegisteredCommandContext {
-  ui: {
-    notify: (...args: [string, NotificationLevel]) => void;
-  };
+interface PiHandlers {
+  session_start: unknown;
+  tool_result: unknown;
 }
 
 interface RegisteredCommand {
   description: string;
-  handler: (...args: [string, RegisteredCommandContext]) => Promise<void> | void;
+  handler: unknown;
 }
 
 class Harness {
@@ -87,9 +67,9 @@ describe("pi extension /lint-branching command", () => {
 
     try {
       process.chdir(projectDir);
-      await harness.handlers.session_start?.();
+      await (harness.handlers.session_start as any)?.();
 
-      await harness.command.handler("", {
+      await (harness.command.handler as any)("", {
         ui: {
           notify(message: string, level: NotificationLevel) {
             notifications.push([message, level]);
