@@ -1,5 +1,16 @@
+/**
+ * pi extension for eslint-plugin-lookup-table
+ *
+ * Automatically runs the no-redundant-branching ESLint rule after every
+ * file write or edit on TypeScript/JavaScript files. Diagnostics are fed
+ * back to the LLM so it can fix the violations in the same turn.
+ *
+ * Install: pi install npm:eslint-plugin-lookup-table
+ *
+ * Everything is bundled — no separate peer dependencies needed.
+ */
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-
+import { clearTimeout, setTimeout } from "node:timers";
 import { ESLint } from "eslint";
 import plugin from "./index.js";
 
@@ -54,12 +65,12 @@ export default function (pi: ExtensionAPI) {
         ? lint.lintText(content, { filePath })
         : lint.lintFiles([filePath]);
 
-      const timer = (globalThis as any).setTimeout(() => {}, LINT_TIMEOUT_MS);
+      const timer = setTimeout(() => {}, LINT_TIMEOUT_MS);
       const results = await Promise.race([
         resultsPromise,
-        new Promise<null>((r) => (globalThis as any).setTimeout(() => r(null), LINT_TIMEOUT_MS)),
+        new Promise<null>((r) => setTimeout(() => r(null), LINT_TIMEOUT_MS)),
       ]);
-      (globalThis as any).clearTimeout(timer);
+      clearTimeout(timer);
 
       if (!results) return;
 
