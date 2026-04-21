@@ -9,8 +9,9 @@
  *
  * Everything is bundled — no separate peer dependencies needed.
  */
-import { ESLint } from "eslint";
+import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { clearTimeout, setTimeout } from "node:timers";
+import { ESLint } from "eslint";
 import plugin from "./index.js";
 
 const LINTABLE = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
@@ -38,12 +39,17 @@ function extname(p: string): string {
   return i >= 0 ? p.slice(i) : "";
 }
 
-export default function (pi: any) {
-  pi.on("session_start", async () => {
-    eslintInstance = null; // reset on new session
+export default function (pi: ExtensionAPI) {
+  pi.on("session_start", async (event: { reason?: string }) => {
+    // Only reset on fresh sessions, not reload/resume where state carries over
+    // Undefined reason = legacy or mock call; treat as startup
+    const reason = event?.reason ?? "startup";
+    if (reason === "startup" || reason === "new" || reason === "fork") {
+      eslintInstance = null;
+    }
   });
 
-  pi.on("tool_result", async (event: any) => {
+  pi.on("tool_result", async (event: any, ctx: any) => {
     if (event.toolName !== "write" && event.toolName !== "edit") return;
 
     const filePath: string | undefined = event.input?.path;
@@ -98,6 +104,10 @@ export default function (pi: any) {
     } catch {
       // Never block on lint failure
     }
+  });
+
+  pi.on("session_shutdown", async () => {
+    eslintInstance = null;
   });
 
   pi.registerCommand("lint-branching", {

@@ -49,6 +49,7 @@
     "@typescript-eslint/utils": "8.58.1"
   },
   "peerDependencies": {
+    "@mariozechner/pi-coding-agent": ">=0.65.0",
     "eslint": ">=9.0.0"
   },
   "devDependencies": {
