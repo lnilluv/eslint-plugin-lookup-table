@@ -42,7 +42,9 @@ function extname(p: string): string {
 export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (event: { reason?: string }) => {
     // Only reset on fresh sessions, not reload/resume where state carries over
-    if (event.reason === "startup" || event.reason === "new" || event.reason === "fork") {
+    // Undefined reason = legacy or mock call; treat as startup
+    const reason = event?.reason ?? "startup";
+    if (reason === "startup" || reason === "new" || reason === "fork") {
       eslintInstance = null;
     }
   });
